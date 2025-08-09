@@ -25,9 +25,7 @@
   "devDependencies": {
     "@types/node": "^20.12.12",
     "@types/js-yaml": "^4.0.9",
-    "@types/node-fetch": "^3.0.3",
-    "@types/fast-glob": "^3.2.13",
-    "@types/commander": "^11.0.0",
+    "@types/commander": "2.12.5",
     "eslint": "^9.7.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",

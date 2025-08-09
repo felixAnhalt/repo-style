@@ -5,5 +5,8 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   dts: true,
-  target: "node20"
+  target: "node20",
+  external: [
+    "typescript",
+  ]
 });
