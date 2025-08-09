@@ -6,3 +6,4 @@ A minimal, deterministic CLI that infers repository conventions and outputs `AGE
 ```bash
 npm i
 npm run dev -- scan .
+```

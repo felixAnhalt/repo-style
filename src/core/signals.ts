@@ -2,6 +2,7 @@ import { scanConfigs } from '../scanners/configScanner.js';
 import { scanASTPython } from '../scanners/astScannerPy.js';
 import { scanASTTs } from '../scanners/astScannerTs.js';
 import { scanCI } from '../scanners/ciScanner.js';
+import { materializeRepo } from '../utils/git.js';
 
 export type Signal = {
   kind: string; // e.g., config.black, style.lineLength
@@ -15,18 +16,16 @@ export async function scanRepository(opts: {
   rev?: string;
   maxFiles?: number;
 }) {
-  // TODO: if URL is github://, clone shallow and resolve default branch + SHA via integrations/github
-  const repo = { remote: isUrl(opts.pathOrUrl) ? opts.pathOrUrl : undefined, sha: 'HEAD' };
+  const repoInfo = await materializeRepo(opts.pathOrUrl, opts.rev);
+  const root = repoInfo.path;
+  const repo = { remote: repoInfo.remote, sha: repoInfo.sha };
   const signals = [
-    ...(await scanConfigs(opts.pathOrUrl)),
-    ...(await scanASTPython(opts.pathOrUrl, opts.maxFiles)),
-    ...(await scanASTTs(opts.pathOrUrl, opts.maxFiles)),
-    ...(await scanCI(opts.pathOrUrl))
+    ...(await scanConfigs(root)),
+    ...(await scanASTPython(root, opts.maxFiles)),
+    ...(await scanASTTs(root, opts.maxFiles)),
+    ...(await scanCI(root))
   ];
   const metrics = { signalCount: signals.length };
+  if (repoInfo.cleanup) await repoInfo.cleanup();
   return { repo, signals, metrics };
-}
-
-function isUrl(x: string) {
-  try { new URL(x); return true; } catch { return false; }
 }
