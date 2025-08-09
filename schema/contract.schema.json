@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "repo", "generatedAt", "rules"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "repo": {
+      "type": "object",
+      "required": ["sha"],
+      "properties": { "remote": { "type": "string" }, "sha": { "type": "string" } }
+    },
+    "generatedAt": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "statement", "scope", "languages", "severity", "confidence", "evidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "statement": { "type": "string" },
+          "scope": { "type": "array", "items": { "type": "string" } },
+          "languages": { "type": "array", "items": { "type": "string" } },
+          "severity": { "enum": ["info", "warn", "error"] },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["path", "lines", "snippetHash"],
+              "properties": {
+                "path": { "type": "string" },
+                "lines": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+                "snippetHash": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

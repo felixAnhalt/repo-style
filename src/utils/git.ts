@@ -1,0 +1,1 @@
+// TODO: shallow clone if URL, otherwise read local; resolve SHA via `git rev-parse`.

@@ -1,0 +1,40 @@
+{
+  "name": "repostyle-agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "repostyle": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1",
+    "commander": "^12.0.0",
+    "fast-glob": "^3.3.2",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node-fetch": "^3.0.3",
+    "@types/fast-glob": "^3.2.13",
+    "@types/commander": "^11.0.0",
+    "eslint": "^9.7.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.3.3",
+    "tsup": "^8.1.0",
+    "tsx": "^4.7.2",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}
