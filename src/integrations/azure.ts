@@ -1,14 +1,20 @@
 import crypto from 'node:crypto';
+import {
+  AZURE_OPENAI_ENDPOINT,
+  AZURE_OPENAI_API_KEY,
+  AZURE_OPENAI_DEPLOYMENT,
+  AZURE_OPENAI_API_VERSION
+} from '../env.js';
 
 export type AzureEnv = {
   endpoint?: string; apiKey?: string; deployment?: string; apiVersion?: string;
 };
 export function getAzureEnv(): AzureEnv {
   return {
-    endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-    apiKey: process.env.AZURE_OPENAI_API_KEY,
-    deployment: process.env.AZURE_OPENAI_DEPLOYMENT,
-    apiVersion: process.env.AZURE_OPENAI_API_VERSION
+    endpoint: AZURE_OPENAI_ENDPOINT,
+    apiKey: AZURE_OPENAI_API_KEY,
+    deployment: AZURE_OPENAI_DEPLOYMENT,
+    apiVersion: AZURE_OPENAI_API_VERSION
   };
 }
 

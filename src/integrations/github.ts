@@ -1,7 +1,8 @@
 import { Octokit } from '@octokit/rest';
+import { GITHUB_TOKEN, GH_TOKEN } from '../env.js';
 
 export function getOctokit(): Octokit {
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const token = GITHUB_TOKEN || GH_TOKEN;
   return new Octokit(token ? { auth: token } : {});
 }
 

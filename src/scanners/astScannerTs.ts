@@ -42,6 +42,15 @@ export async function scanASTTs(root: string, max?: number): Promise<Signal[]> {
     };
 
     visit(sf);
+
+    // Always add a signal for every successfully parsed file
+    signals.push({
+      kind: 'ts.file.parsed',
+      value: true,
+      source: { path: file, lines: [1, 200] },
+      weight: 0.1
+    });
+
     if (exportedAny > 0) {
       signals.push({
         kind: 'ts.export.any.count',
