@@ -39,7 +39,17 @@ export async function synthesizeRulesUnified(
       const prompt: ChatMessage[] = [
         {
           role: 'system',
-          content: `You are an expert software engineer. Infer high-level implicit coding rules, best practices, and patterns from the following file. Focus on actionable, generalizable principles (e.g., "use guard clauses if applicable", "prefer early returns", "avoid deep nesting", "prefer pure functions", "validate inputs", "handle errors explicitly", "prefer immutability", etc). Avoid low-level, config-only, or trivial rules. Do not explain every line or config. Only return a JSON array of rules using the bounded rule template. Return empty if no high-level implicit rules are present.`
+          content: `You are an expert software engineer.
+Infer high-level implicit coding rules, best practices, and patterns from the following file.
+Focus on actionable, generalizable principles (e.g., "use guard clauses", "prefer early returns", "avoid deep nesting", "prefer pure functions", "validate inputs", "handle errors explicitly", "prefer immutability", etc). Avoid low-level, config-only, or trivial rules.
+Do not explain every line or config.
+Only return a JSON array of rules using the bounded rule template.
+Return empty if no high-level implicit rules are present.
+
+For each rule, generate a deterministic, standardized id:
+- Use kebab-case, derived from the main concept or statement (e.g., "prefer-early-return", "validate-inputs").
+- Otherwise, use a canonical, short, descriptive id based on the rule's main idea.
+- Never generate random or numeric ids.`
         },
         {
           role: 'user',
