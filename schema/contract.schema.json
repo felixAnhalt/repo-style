@@ -14,7 +14,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "title", "statement", "scope", "languages", "severity", "confidence", "evidence"],
+        "required": [],
         "properties": {
           "id": { "type": "string" },
           "title": { "type": "string" },

@@ -39,17 +39,71 @@ export async function synthesizeRulesUnified(
       const prompt: ChatMessage[] = [
         {
           role: 'system',
-          content: `You are an expert software engineer.
-Infer high-level implicit coding rules, best practices, and patterns from the following file.
-Focus on actionable, generalizable principles (e.g., "use guard clauses", "prefer early returns", "avoid deep nesting", "prefer pure functions", "validate inputs", "handle errors explicitly", "prefer immutability", etc). Avoid low-level, config-only, or trivial rules.
-Do not explain every line or config.
-Only return a JSON array of rules using the bounded rule template.
-Return empty if no high-level implicit rules are present.
+          content: `Got it. Your current prompt lets the model drift into meta/config trivia. Here’s a tighter, principle-first version that forces high-level, broadly applicable rules and explicitly bans the noise you saw.
 
-For each rule, generate a deterministic, standardized id:
-- Use kebab-case, derived from the main concept or statement (e.g., "prefer-early-return", "validate-inputs").
-- Otherwise, use a canonical, short, descriptive id based on the rule's main idea.
-- Never generate random or numeric ids.`
+Use this verbatim as the single prompt you send for each file.
+
+⸻
+
+Improved prompt (drop-in)
+
+You are an expert software engineer and code reviewer.
+
+Task: From the file below, extract only the highest-leverage coding principles actually evidenced by the code — the kind that shape how code is written (control flow, error posture, function design, state, testing discipline), not low-level implementation details.
+
+Output: Return only a JSON array of rules (no prose), each following this template:
+
+{
+  "id": "kebab-case-id",
+  "title": "Short, principle-level title",
+  "statement": "Single-sentence, testable principle using MUST/SHOULD.",
+  "rationale": "Why this raises quality/maintainability.",
+  "scope": ["**/*"],
+  "languages": ["<language(s)>"],
+  "severity": "error|warn|info",
+  "confidence": 0.0,
+  "evidence": [
+    { "path": "<file path>", "lines": [startLine, endLine], "snippetHash": "NA" }
+  ]
+}
+
+\t•\tid: kebab-case, ≤3 words, derived from the concept (e.g., prefer-early-return, validate-inputs).
+\t•\tseverity: how strongly the team treats violations (principle-level defaults: warn; hard rules: error; soft style: info).
+\t•\tconfidence: 0–1. Use higher values only if the file clearly signals the principle (naming, comments, repeated patterns).
+\t•\tevidence: 1–3 spans that demonstrate the principle; set snippetHash to "NA" (downstream will fill it).
+
+Inclusions (good):
+\t•\tControl flow norms: prefer guard clauses / early return, avoid deep nesting, fail fast on invalid state.
+\t•\tError handling posture: validate at boundaries, explicit error handling, no silent catch, add context.
+\t•\tFunction & module design: single responsibility, small functions, pure core & side-effect edges, immutability by default.
+\t•\tAPI & types: narrow, explicit types; avoid leaking any in public interfaces; stable boundaries.
+\t•\tTesting stance: fast unit tests for logic; a few e2e for wiring (only if evidence in file suggests this).
+\t•\tNaming/semantics patterns that reflect domain thinking (not mere style).
+
+Exclusions (hard):
+Reject any rule that is:
+\t•\tMeta/infra/config-only: CLI wiring, CI/SARIF formatting, reporter layout, Ajv/tsup/Commander minutiae, dotenv/env shims, GitHub API conveniences.
+\t•\tLibrary- or file-specific how-tos: “use promisify(exec)”, “call parseAsync”, “set maxBuffer”, “use js-yaml dump”, “use low temperature for Azure OpenAI”.
+\t•\tRestating syntax or obvious language defaults.
+\t•\tOne-off optimizations or codebase plumbing that doesn’t generalize across files.
+\t•\tDocumentation/reporting conventions (e.g., how AGENTS.md is rendered).
+
+Quality gates (apply before emitting any rule):
+\t1.\tPrinciple level? If it mentions a specific package, function name, file path, or output format → discard unless it clearly generalizes beyond that detail.
+\t2.\tBroadly enforceable? Could a linter/codereview checklist meaningfully check it? If not → discard.
+\t3.\tActionable & testable? Must be a single sentence a reviewer could uphold.
+\t4.\tEvidence-backed? Point to lines that actually show the principle (naming, branching, error flows, data handling, comments). No evidence → discard.
+\t5.\tNon-duplicative? Merge overlaps; keep the clearest, broadest form.
+
+Quantity & ordering:
+\t•\tEmit 3–10 rules maximum — pick only the top impact items.
+\t•\tSort by impact (error > warn > info), then descending confidence.
+
+Tone/wording:
+\t•\tUse MUST/SHOULD and avoid weasel words (“try to”, “consider”).
+\t•\tBe concise; no examples inside statements.
+
+If no high-level principles are evidenced in this file: return [].`
         },
         {
           role: 'user',
@@ -142,5 +196,5 @@ export function dedupeRules(rs: Rule[]): Rule[] {
     }
     seen.add(key); out.push(r);
   }
-  return out.sort((a, b) => a.id.localeCompare(b.id));
+  return out.sort((a, b) => a.id?.localeCompare(b.id) || 0);
 }
